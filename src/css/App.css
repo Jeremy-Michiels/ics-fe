@@ -36,3 +36,27 @@
 .header{
   background-color: #CCCCCC;
 }
+.loader {
+  border-left: 16px solid #4591c6;
+  border-top: 16px solid #e41f13; 
+  border-bottom: 16px solid #ee711a;
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+  position: relative;
+  left: 43.3%
+
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loadingScreen{
+  background-color: #282c34;
+  height: 1000px;
+  width: 100%;
+}
+.fading{animation:fading 2s}@keyframes fading{0%{opacity:0}100%{opacity:1}}
