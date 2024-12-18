@@ -7,7 +7,10 @@ function EmailForm(props){
 
     let [loading, setLoading] = useState(false)
     let [list, setList] = useState([]);
+    let [disDates, setDisDates] = useState([])
 
+
+    const weekday = ["Zondag","Maandag","Dinsdag","Woensdag","Donderdag","Vrijdag","Zaterdag"];
 
     function fetchAva(){
         var mails = []
@@ -34,8 +37,20 @@ function EmailForm(props){
     .then(res => res.json())
     .then(y => {
         setList(y)
+        checkDate(y)
         setLoading(false)
     });
+    }
+
+    function checkDate(list){
+        var dis = []
+        list.forEach(z => {
+            if(!dis.includes(z.datum)){
+                dis.push(z.datum)
+            }
+        })
+        dis = dis.sort()
+        setDisDates(dis)
     }
 
     return (
@@ -68,11 +83,7 @@ function EmailForm(props){
                 <div className="col p-1">
                 <input type='text' className='form-control' defaultValue={e.mail} placeholder="Vul een emailadres in" onChange={(f) => {
                     let newMails = props.emails.map(g => {
-                        console.log(e.id)
-                        console.log(g.id)
                         if(e.id === g.id){
-                            console.log("test")
-                            console.log(f.target.value)
                             let h = {
                                 ...g,
                                 mail: f.target.value,
@@ -170,7 +181,28 @@ function EmailForm(props){
                 {list.length > 0 ? <>
                 
                 <div className="row border border-white m-1 p-1 ">
-                    
+                    {disDates.map(d => {
+                        var da = new Date(d)
+                        return<div key={d}>
+                            <h3>{weekday[da.getDay()] + " " + da.toLocaleDateString("nl")}</h3>
+                            <div className="row border border-white p-2 m-2">
+                                {list.map(i => {
+                                    if(i.datum === d){
+                                        return (
+                                            <>
+                                            <button className="btn btn-secondary col-sm-4 border border-dark p-2 m-1">
+                                                <h5>{i.startTijd} - {i.eindTijd}</h5>
+                                            </button>
+                                            </>
+                                        )
+                                    }
+                                    return (
+                                <></>)
+                                })}
+                                
+                            </div>
+                        </div>
+                    })}
                 </div>
                 </> : <></>}
                 </div>
