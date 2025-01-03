@@ -29,10 +29,12 @@ function App() {
     setIsFetching(true);
     fetch("http://localhost:5162/XOutlookApi/GetBearerToken")
       .then(x => x.json())
-      .then(y => {
-        setLogin(y)
+      .then((result) => {
+        setLogin(result)
         setIsLoaded(true)
         setIsFetching(false)
+      }, (error) => {
+        
       })
   }
 

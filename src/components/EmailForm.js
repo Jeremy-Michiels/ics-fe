@@ -8,6 +8,7 @@ function EmailForm(props){
     let [loading, setLoading] = useState(false)
     let [list, setList] = useState([]);
     let [disDates, setDisDates] = useState([])
+    let [selDate, setSelDate] = useState({})
 
 
     const weekday = ["Zondag","Maandag","Dinsdag","Woensdag","Donderdag","Vrijdag","Zaterdag"];
@@ -45,10 +46,12 @@ function EmailForm(props){
     function checkDate(list){
         var dis = []
         list.forEach(z => {
-            if(!dis.includes(z.datum)){
-                dis.push(z.datum)
+            let date = new Date(z.datum).setHours(0);
+            if(!dis.includes(date)){
+                dis.push(date)
             }
         })
+        
         dis = dis.sort()
         setDisDates(dis)
     }
@@ -183,14 +186,17 @@ function EmailForm(props){
                 <div className="row border border-white m-1 p-1 ">
                     {disDates.map(d => {
                         var da = new Date(d)
+                        console.log(da.toLocaleDateString("nl"))
                         return<div key={d}>
                             <h3>{weekday[da.getDay()] + " " + da.toLocaleDateString("nl")}</h3>
                             <div className="row border border-white p-2 m-2">
                                 {list.map(i => {
-                                    if(i.datum === d){
+                                    if(new Date(i.datum).toLocaleDateString("nl") === da.toLocaleDateString()){
                                         return (
                                             <>
-                                            <button className="btn btn-secondary col-sm-4 border border-dark p-2 m-1">
+                                            <button className="btn btn-secondary col-sm-4 border border-dark p-2 m-1" onClick={() => {
+                                                setSelDate(i)
+                                            }}>
                                                 <h5>{i.startTijd} - {i.eindTijd}</h5>
                                             </button>
                                             </>
@@ -208,6 +214,27 @@ function EmailForm(props){
                 </div>
             </div>
           </div>
+          {selDate.datum !== undefined ? <>
+          <div className="row mt-5 mb-3 p-3 border text-center" >
+            
+            
+            <h1>{new Date(selDate.datum).toLocaleDateString("nl")}</h1>
+            <div className="col">
+                Van:
+                <input type="time" defaultValue={selDate.startTijd}></input>
+            </div>
+            <div className="col">
+                Tot: 
+                <input type="time" defaultValue={selDate.eindTijd}></input>
+            </div>
+            <div>
+            <button className="btn btn-success">
+                Versturen
+            </button>
+            </div>
+            
+            </div>
+            </> : <></>}
         </div>
         </>
     )

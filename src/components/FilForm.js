@@ -111,10 +111,11 @@ function FilForm(props) {
                                                 if(mailBerichtInput.current.value !== ""){
                                                     props.setMailBericht(mailBerichtInput.current.value);
                                                     if(props.meetingTijd !== "00:00"){
-                                                        if((props.reistijdB === false || (props.reistijdB === true && props.online && props.reistijd !== "00:00") || props.online)){
+                                                        if((props.reistijdB === false || (props.reistijdB === true && !props.online && props.reistijd !== "00:00") || props.online)){
                                                             props.setCheck(false);
                                                         }
                                                         else{
+
                                                             alert("Vul het veld Reistijd in!")
                                                         }
                                                         
