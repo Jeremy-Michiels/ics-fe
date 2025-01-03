@@ -1,6 +1,8 @@
 import { useRef, useState } from "react"
+import {readFile, utils} from "xlsx"
 
 function FilForm(props) {
+
 
     let titelInput=useRef();
     let locatieInput=useRef();
@@ -11,6 +13,35 @@ function FilForm(props) {
 
     
 
+    const fileToDataUri = (file) => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          resolve(event.target.result)
+        };
+        reader.readAsArrayBuffer(file);
+        })
+
+
+
+        const onChange = (file) => {
+    
+            if(!file) {
+              return;
+            }
+        
+            fileToDataUri(file)
+              .then(dataUri => {
+
+                
+                const workbook = readFile(dataUri)
+                const sheet = workbook.Sheets[workbook.SheetNames[0]]
+                const jsonData = utils.sheet_to_json(sheet)
+                console.log(jsonData)
+              })
+            
+          }
+        
+    
 
     return(
         <>
@@ -91,6 +122,7 @@ function FilForm(props) {
                         </div></>}
                         
                         <div className="row" style={{position: "absolute", bottom: 0}}>
+                            <div className="col">
                             <button className="btn btn-primary" onClick={() => {
                                 console.log(titelInput.current.value)
                                 if(titelInput.current.value !== ""){
@@ -152,6 +184,14 @@ function FilForm(props) {
                                 }}>
                                 Ga verder
                             </button>
+                            </div>
+                            <div className="col">
+                            <label for="file-upload" className="custom-file-upload btn btn-primary">
+                                Custom Upload
+                            </label>
+                            <input id="file-upload" type="file" onChange={(event) => onChange(event.target.files[0] || null)}/>
+                            </div>
+                            
                         </div>
 
                     </div>

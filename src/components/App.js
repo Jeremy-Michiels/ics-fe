@@ -99,6 +99,8 @@ function App() {
         reistijdB={reistijdB} setReisTijdB={setReisTijdB}
         reistijd={reistijd} setReisTijd={setReisTijd}
         meetingTijd={meetingTijd}setMeetingTijd={setMeetingTijd}
+        emails={emails} setEmails={setEmails}
+
         ></FilForm>
         </> : <>
         <EmailForm 
@@ -112,7 +114,8 @@ function App() {
         reistijdB ={reistijdB}
         emails={emails} setEmails={setEmails}
         bearer={login}
-        meetingTijd = {meetingTijd} reistijd = {reistijd}
+        meetingTijd = {meetingTijd} 
+        reistijd = {reistijd}
         ></EmailForm>
         </>}
       
