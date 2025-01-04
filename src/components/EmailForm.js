@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 
 function EmailForm(props){
@@ -9,6 +9,9 @@ function EmailForm(props){
     let [list, setList] = useState([]);
     let [disDates, setDisDates] = useState([])
     let [selDate, setSelDate] = useState({})
+    let [newerList, setNewerList] = useState([])
+
+    let modalRef = useRef();
 
 
     const weekday = ["Zondag","Maandag","Dinsdag","Woensdag","Donderdag","Vrijdag","Zaterdag"];
@@ -35,12 +38,27 @@ function EmailForm(props){
         
     })
 
-    .then(res => res.json())
-    .then(y => {
-        setList(y)
-        checkDate(y)
-        setLoading(false)
-    });
+    .then(res => {
+        if(res.ok){
+            return res.json().then((result) => {
+                setList(result)
+                checkDate(result)
+                setLoading(false)
+            })
+        }
+        else{
+            
+            return res.text().then((error) => {
+                alert(error)
+                setLoading(false)
+            })
+        }
+        
+    })
+    }
+
+    function selecter(i){
+
     }
 
     function checkDate(list){
@@ -55,6 +73,62 @@ function EmailForm(props){
         dis = dis.sort()
         setDisDates(dis)
     }
+
+    function agenda(){
+        // fetch()
+
+        if(props.excelList === true){
+            var checker = false;
+            var test = []
+            var newList = props.list.map(y => {
+                if(y["Workshop Nummer"] === props.excelSelected["Workshop Nummer"]){
+                    checker = true;
+                    return {
+                        ...y,
+                        "Definitieve datum": new Date(selDate.datum).toLocaleDateString("nl") + " om " + selDate.startTijd
+                    }
+                }
+                else{
+                    return y
+                }
+            })
+            console.log(checker)
+            if(checker === false){
+                let emailsOnString = ""
+                props.emails.forEach(x => {emailsOnString = emailsOnString + x.mail + ";"})
+                newList.push({
+                    "Workshop Nummer": props.list.length + 1,
+                    "Workshop Naam": props.titel,
+                    "Functionele groepen": "",
+                    "Processen": "",
+                    "Opmerking": "",
+                    "Tijdsindicatie": props.meetingTijd,
+                    "Definitieve datum": new Date(selDate.datum).toLocaleDateString("nl") + " om " + selDate.startTijd,
+                    "Deelnemers": emailsOnString
+                })
+            }
+            console.log(newList);
+            props.setList(newList);
+
+            var newItems = newList.filter(y => {
+                console.log(y)
+                if(y["Definitieve datum"] === undefined){
+                    console.log("yes")
+                    return true
+                }
+                else{
+                    console.log("no")
+                    return false
+                }
+            })
+            
+            setNewerList(newItems)
+            modalRef.current.style.display = "block"
+        }
+        
+    }
+
+    
 
     return (
         <>
@@ -91,7 +165,6 @@ function EmailForm(props){
                                 ...g,
                                 mail: f.target.value,
                             }
-                            console.log(h)
                             return h
                             
                         }
@@ -186,7 +259,6 @@ function EmailForm(props){
                 <div className="row border border-white m-1 p-1 ">
                     {disDates.map(d => {
                         var da = new Date(d)
-                        console.log(da.toLocaleDateString("nl"))
                         return<div key={d}>
                             <h3>{weekday[da.getDay()] + " " + da.toLocaleDateString("nl")}</h3>
                             <div className="row border border-white p-2 m-2">
@@ -228,13 +300,87 @@ function EmailForm(props){
                 <input type="time" defaultValue={selDate.eindTijd}></input>
             </div>
             <div>
-            <button className="btn btn-success">
+            <button className="btn btn-success" onClick={agenda}>
                 Versturen
             </button>
             </div>
             
             </div>
             </> : <></>}
+
+
+            <div className="modal" ref={modalRef}>
+        <div className="modal-content" style={{color: "black"}}>
+            <p>Uitnodiging is verstuurd.</p>
+            {props.excelList === true ? <>
+                {newerList.length > 0 ? <>
+                    <div className="row m-3 p-2">
+                    Volgende item om in te plannen:
+                    </div>
+                    <div className="row">
+                <div className="col">
+                    Workshop Nummer
+                </div>
+                <div className="col">
+                    Workshop Naam
+                </div>
+                <div className="col">
+                    
+                </div>
+            </div>
+                    {newerList.map(i => {
+                        return <div key={newerList["Workshop Nummer"]}>
+                            <div className="row m-2 p-1 border border-black border-solid" >
+                                <div className="col">
+                                    {i["Workshop Nummer"]}
+                                </div>
+                                <div className="col">
+                                    {i["Workshop Naam"]}
+                                </div>
+                                <div className="col">
+                                    <button className="btn btn-primary" onClick={() => selecter(i)}>
+                                        Selecteer
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                    })}
+                    <div className="row m-3 p-2"></div>
+                    
+                    
+                </> : <></>}
+            
+
+            </> : <></>}
+        <div className="row">
+            <div className="col">
+                    <button className="btn btn-primary" onClick={() => {
+                        props.setTitel("")
+                        props.setEmails([])
+                        props.setLocatie("")
+                        props.setMailBericht("")
+                        props.setStDate("")
+                        props.setEnDate("")
+                        props.setOnline("")
+                        props.setReisTijdB(false)
+                        props.setReisTijd("00:00")
+                        props.setMeetingTijd("00:00")
+                        props.setExcelSelected({})
+                        props.setCheck(true)
+
+                        }}>Nog een item toevoegen</button>
+            </div>
+            <div className="col">
+                <button className="btn btn-success">
+                    Exporteren naar Excel
+                </button>
+            </div>
+        </div>
+        </div>
+        </div>
+
+
         </div>
         </>
     )

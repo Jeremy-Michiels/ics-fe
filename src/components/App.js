@@ -24,6 +24,9 @@ function App() {
   let [isLoaded, setIsLoaded] = useState(false)
   let [login, setLogin] = useState({})
   let [isFetching, setIsFetching] = useState(false)
+  let [list, setList] = useState([]);
+  let [excelList, setExcelList] = useState(false)
+  let [excelSelected, setExcelSelected] = useState({})
 
   function fetcher(){
     setIsFetching(true);
@@ -72,7 +75,7 @@ function App() {
   }
 
   return (
-    
+    <>
     <div className='fading'>
     <div className='header ps-5'>
       <div className='row'>
@@ -100,6 +103,9 @@ function App() {
         reistijd={reistijd} setReisTijd={setReisTijd}
         meetingTijd={meetingTijd}setMeetingTijd={setMeetingTijd}
         emails={emails} setEmails={setEmails}
+        list ={list} setList={setList}
+        excelSelected={excelSelected} setExcelSelected={setExcelSelected}
+        excelList={excelList} setExcelList={setExcelList}
 
         ></FilForm>
         </> : <>
@@ -111,16 +117,20 @@ function App() {
         stDate={stDate} setStDate={setStDate} 
         enDate={enDate }setEnDate={setEnDate}
         online={online} setOnline={setOnline}
-        reistijdB ={reistijdB}
+        reistijdB ={reistijdB} setReisTijdB ={setReisTijdB}
         emails={emails} setEmails={setEmails}
         bearer={login}
-        meetingTijd = {meetingTijd} 
-        reistijd = {reistijd}
+        meetingTijd = {meetingTijd} setMeetingTijd={setMeetingTijd}
+        reistijd = {reistijd}setReisTijd={setReisTijd}
+        list={list} setList={setList}
+        excelList = {excelList}
+        excelSelected={excelSelected} setExcelSelected={setExcelSelected}
         ></EmailForm>
         </>}
       
     </div>
     </div>
+    </>
   );
 }
 

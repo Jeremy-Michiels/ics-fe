@@ -1,5 +1,9 @@
 import { useRef, useState } from "react"
 import {readFile, utils} from "xlsx"
+import { Link } from "react-router";
+
+
+import Template from "../ExcelTemplate.xlsx"
 
 function FilForm(props) {
 
@@ -10,7 +14,8 @@ function FilForm(props) {
     let enDateInput=useRef();
     let mailBerichtInput=useRef();
     let onlineBox = useRef();
-
+    let modalRef = useRef();
+    let meetingTijdRef = useRef();
     
 
     const fileToDataUri = (file) => new Promise((resolve, reject) => {
@@ -20,6 +25,38 @@ function FilForm(props) {
         };
         reader.readAsArrayBuffer(file);
         })
+        
+        function selecter(sel){
+            props.setExcelSelected(sel)
+            titelInput.current.value = "Workshop " + sel["Workshop Nummer"] + ": " + sel["Workshop Naam"]
+            props.setTitel("Workshop " + sel["Workshop Nummer"] + ": " + sel["Workshop Naam"])
+            var uur = Math.round((sel["Tijdsindicatie"] * 24))
+            var min = ((sel["Tijdsindicatie"] * 24) - uur) * 60
+            if(min < 0){
+                uur = uur - 1
+                min = min * -1
+            }
+            if(uur < 10){
+                uur = "0" + uur
+            }
+            if(min < 10){
+                min = "0" + min
+            }
+            props.setMeetingTijd(uur + ":" + min)
+            meetingTijdRef.current.value = uur + ":" + min
+            let id = 0;
+            let emails = sel["Deelnemers"] === undefined ? [] : sel["Deelnemers"].split(";").map(y => {
+                id++;
+                return {
+                    id: id,
+                    mail: y,
+                    reistijdB: false,
+                }
+            })
+            props.setEmails(emails)
+            props.setExcelList(true)
+            modalRef.current.style.display = "none";
+        }
 
 
 
@@ -36,7 +73,18 @@ function FilForm(props) {
                 const workbook = readFile(dataUri)
                 const sheet = workbook.Sheets[workbook.SheetNames[0]]
                 const jsonData = utils.sheet_to_json(sheet)
-                console.log(jsonData)
+                props.setList(jsonData);
+                // Get the modal
+                var modal = modalRef.current
+                modal.style.display = "block";
+
+                // When the user clicks anywhere outside of the modal, close it
+                window.onclick = function(event) {
+                if (event.target === modal) {
+                    modal.style.display = "none";
+
+                }
+                }
               })
             
           }
@@ -45,6 +93,42 @@ function FilForm(props) {
 
     return(
         <>
+        <div className="modal" ref={modalRef}>
+        <div className="modal-content" style={{color: "black"}}>
+            {props.list.length > 0 ? <>
+            <p>Kies een opdracht</p>
+            <div className="row">
+                <div className="col">
+                    Workshop Nummer
+                </div>
+                <div className="col">
+                    Workshop Naam
+                </div>
+                <div className="col">
+                    
+                </div>
+            </div>
+        {props.list.map(y => {
+            return <div key={y["Workshop Nummer"]}>
+            <div className="row m-2 p-1 border border-black border-solid" >
+                <div className="col">
+                    {y["Workshop Nummer"]}
+                </div>
+                <div className="col">
+                    {y["Workshop Naam"]}
+                </div>
+                <div className="col">
+                    <button className="btn btn-primary" onClick={() => selecter(y)}>
+                        Selecteer
+                    </button>
+                </div>
+
+            </div>
+            </div>
+        })}
+            </> : <></>}
+        </div>
+        </div>
             <div className="container">
                 <div className="row">
                 <h1 className="text-start mb-5">Meeting Gegevens</h1>
@@ -97,7 +181,7 @@ function FilForm(props) {
                         <div className="row m-2">
                             <div className="col text-start">
                                 <h5 className="text-start">Duur meeting</h5>
-                                <input type="time" defaultValue={props.meetingTijd} onChange={(y) => {
+                                <input type="time" defaultValue={props.meetingTijd} ref={meetingTijdRef} onChange={(y) => {
                                     props.setMeetingTijd(y.target.value)
                                 }}></input>
                             </div>
@@ -124,7 +208,6 @@ function FilForm(props) {
                         <div className="row" style={{position: "absolute", bottom: 0}}>
                             <div className="col">
                             <button className="btn btn-primary" onClick={() => {
-                                console.log(titelInput.current.value)
                                 if(titelInput.current.value !== ""){
                                     props.setTitel(titelInput.current.value);
                                     if((!props.online && locatieInput.current.value) || props.online){
@@ -185,12 +268,23 @@ function FilForm(props) {
                                 Ga verder
                             </button>
                             </div>
-                            <div className="col">
-                            <label for="file-upload" className="custom-file-upload btn btn-primary">
-                                Custom Upload
+                            {props.excelList === false ? <>
+                                <div className="col">
+                            <label htmlFor="file-upload" className="custom-file-upload btn btn-primary">
+                                Upload een Excel bestand
                             </label>
                             <input id="file-upload" type="file" onChange={(event) => onChange(event.target.files[0] || null)}/>
                             </div>
+                            <div className="col">
+                                <Link to={Template} target="_blank" download>
+                                
+                                <button className="btn btn-success">
+                                    Download de Excel template
+                                </button>
+                                </Link>
+                            </div>
+                            </> : <></>}
+                            
                             
                         </div>
 
