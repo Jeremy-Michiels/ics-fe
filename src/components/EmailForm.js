@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import * as XLSX from "xlsx"
 
 
 function EmailForm(props){
@@ -12,6 +13,8 @@ function EmailForm(props){
     let [newerList, setNewerList] = useState([])
 
     let modalRef = useRef();
+    let startTijd = useRef();
+    let eindTijd = useRef();
 
 
     const weekday = ["Zondag","Maandag","Dinsdag","Woensdag","Donderdag","Vrijdag","Zaterdag"];
@@ -57,9 +60,43 @@ function EmailForm(props){
     })
     }
 
-    function selecter(i){
-
+    function selecter(sel){
+        props.setExcelSelected(sel)
+        props.setTitel("Workshop " + sel["Workshop Nummer"] + ": " + sel["Workshop Naam"])
+        var uur = Math.round((sel["Tijdsindicatie"] * 24))
+        var min = ((sel["Tijdsindicatie"] * 24) - uur) * 60
+        if(min < 0){
+            uur = uur - 1
+            min = min * -1
+        }
+        if(uur < 10){
+            uur = "0" + uur
+        }
+        if(min < 10){
+            min = "0" + min
+        }
+        props.setMeetingTijd(uur + ":" + min)
+        let id = 0;
+        let emails = sel["Deelnemers"] === undefined ? [] : sel["Deelnemers"].split(";").map(y => {
+            id++;
+            return {
+                id: id,
+                mail: y,
+                reistijdB: false,
+            }
+        })
+        props.setEmails(emails)
+        modalRef.current.style.display = "none";
+                        props.setLocatie("")
+                        props.setMailBericht("")
+                        props.setStDate(new Date(props.enDate).toLocaleDateString())
+                        props.setEnDate("")
+                        props.setOnline(false)
+                        props.setReisTijdB(false)
+                        props.setReisTijd("00:00")
+                        props.setCheck(true)
     }
+
 
     function checkDate(list){
         var dis = []
@@ -72,27 +109,42 @@ function EmailForm(props){
         
         dis = dis.sort()
         setDisDates(dis)
+        
     }
 
     function agenda(){
         // fetch()
 
-        if(props.excelList === true){
             var checker = false;
-            var test = []
             var newList = props.list.map(y => {
                 if(y["Workshop Nummer"] === props.excelSelected["Workshop Nummer"]){
                     checker = true;
+                    let emailsOnString = ""
+                    props.emails.forEach(x => {emailsOnString = emailsOnString + x.mail + ";"})
+                    var uur = Math.round((y["Tijdsindicatie"] * 24))
+                    var min = ((y["Tijdsindicatie"] * 24) - uur) * 60
+                    if(min < 0){
+                        uur = uur - 1
+                        min = min * -1
+                    }
+                    if(uur < 10){
+                        uur = "0" + uur
+                    }
+                    if(min < 10){
+                        min = "0" + min
+                    }
                     return {
                         ...y,
-                        "Definitieve datum": new Date(selDate.datum).toLocaleDateString("nl") + " om " + selDate.startTijd
+                        "Definitieve datum": new Date(selDate.datum).toLocaleDateString("nl") + " om " + selDate.startTijd,
+                        "Deelnemers": emailsOnString,
+                        "Tijdsindicatie": uur + ":" + min
+
                     }
                 }
                 else{
                     return y
                 }
             })
-            console.log(checker)
             if(checker === false){
                 let emailsOnString = ""
                 props.emails.forEach(x => {emailsOnString = emailsOnString + x.mail + ";"})
@@ -107,24 +159,20 @@ function EmailForm(props){
                     "Deelnemers": emailsOnString
                 })
             }
-            console.log(newList);
             props.setList(newList);
 
             var newItems = newList.filter(y => {
-                console.log(y)
                 if(y["Definitieve datum"] === undefined){
-                    console.log("yes")
                     return true
                 }
                 else{
-                    console.log("no")
                     return false
                 }
             })
             
             setNewerList(newItems)
             modalRef.current.style.display = "block"
-        }
+        
         
     }
 
@@ -259,19 +307,23 @@ function EmailForm(props){
                 <div className="row border border-white m-1 p-1 ">
                     {disDates.map(d => {
                         var da = new Date(d)
-                        return<div key={d}>
+                        return<div key={weekday[da.getDay()] + " " + da.toLocaleDateString("nl")}>
                             <h3>{weekday[da.getDay()] + " " + da.toLocaleDateString("nl")}</h3>
                             <div className="row border border-white p-2 m-2">
                                 {list.map(i => {
                                     if(new Date(i.datum).toLocaleDateString("nl") === da.toLocaleDateString()){
                                         return (
-                                            <>
+                                        
                                             <button className="btn btn-secondary col-sm-4 border border-dark p-2 m-1" onClick={() => {
                                                 setSelDate(i)
-                                            }}>
+                                                if(startTijd.current !== undefined && startTijd.current !== null){
+                                                    startTijd.current.value = i.startTijd
+                                                    eindTijd.current.value = i.eindTijd
+                                                }
+                                            }} key={weekday[da.getDay()] + " " + da.toLocaleDateString("nl") + " " + i.startTijd + " - " + i.eindTijd}>
                                                 <h5>{i.startTijd} - {i.eindTijd}</h5>
                                             </button>
-                                            </>
+                                            
                                         )
                                     }
                                     return (
@@ -293,11 +345,11 @@ function EmailForm(props){
             <h1>{new Date(selDate.datum).toLocaleDateString("nl")}</h1>
             <div className="col">
                 Van:
-                <input type="time" defaultValue={selDate.startTijd}></input>
+                <input type="time" defaultValue={selDate.startTijd} ref={startTijd}></input>
             </div>
             <div className="col">
                 Tot: 
-                <input type="time" defaultValue={selDate.eindTijd}></input>
+                <input type="time" defaultValue={selDate.eindTijd} ref={eindTijd}></input>
             </div>
             <div>
             <button className="btn btn-success" onClick={agenda}>
@@ -360,7 +412,7 @@ function EmailForm(props){
                         props.setEmails([])
                         props.setLocatie("")
                         props.setMailBericht("")
-                        props.setStDate("")
+                        props.setStDate(new Date(props.enDate).toLocaleDateString())
                         props.setEnDate("")
                         props.setOnline("")
                         props.setReisTijdB(false)
@@ -372,7 +424,13 @@ function EmailForm(props){
                         }}>Nog een item toevoegen</button>
             </div>
             <div className="col">
-                <button className="btn btn-success">
+                <button className="btn btn-success" onClick={() => {
+                    var wb = XLSX.utils.book_new() ; 
+                    console.log(props.list)
+                    var ws = XLSX.utils.json_to_sheet(props.list)
+                    XLSX.utils.book_append_sheet(wb, ws, "Sheet1")
+                    XLSX.writeFile(wb, "download.xlsx")
+                }}>
                     Exporteren naar Excel
                 </button>
             </div>
