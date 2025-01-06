@@ -121,7 +121,7 @@ function App() {
         online={online} setOnline={setOnline}
         reistijdB ={reistijdB} setReisTijdB ={setReisTijdB}
         emails={emails} setEmails={setEmails}
-        bearer={login}
+        bearer={login} setBearer={setLogin}
         meetingTijd = {meetingTijd} setMeetingTijd={setMeetingTijd}
         reistijd = {reistijd}setReisTijd={setReisTijd}
         list={list} setList={setList}

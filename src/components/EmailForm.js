@@ -44,8 +44,9 @@ function EmailForm(props){
     .then(res => {
         if(res.ok){
             return res.json().then((result) => {
-                setList(result)
-                checkDate(result)
+                setList(result.value)
+                props.setBearer(result.bearer)
+                checkDate(result.value)
                 setLoading(false)
             })
         }
