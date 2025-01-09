@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useRef } from "react"
 import {readFile, utils} from "xlsx"
 import { Link } from "react-router";
 
@@ -13,7 +13,6 @@ function FilForm(props) {
     let stDateInput=useRef();
     let enDateInput=useRef();
     let mailBerichtInput=useRef();
-    let onlineBox = useRef();
     let modalRef = useRef();
     let meetingTijdRef = useRef();
     
@@ -74,6 +73,8 @@ function FilForm(props) {
                 const sheet = workbook.Sheets[workbook.SheetNames[0]]
                 const jsonData = utils.sheet_to_json(sheet)
                 props.setList(jsonData);
+                props.newerListSetter(jsonData)
+                
                 // Get the modal
                 var modal = modalRef.current
                 modal.style.display = "block";
@@ -108,7 +109,7 @@ function FilForm(props) {
                     
                 </div>
             </div>
-        {props.list.map(y => {
+        {props.newerList.map(y => {
             return <div key={y["Workshop Nummer"]}>
             <div className="row m-2 p-1 border border-black border-solid" >
                 <div className="col">

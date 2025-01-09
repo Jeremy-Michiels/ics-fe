@@ -10,7 +10,7 @@ function EmailForm(props){
     let [list, setList] = useState([]);
     let [disDates, setDisDates] = useState([])
     let [selDate, setSelDate] = useState({})
-    let [newerList, setNewerList] = useState([])
+    
 
     let modalRef = useRef();
     let startTijd = useRef();
@@ -20,6 +20,7 @@ function EmailForm(props){
     const weekday = ["Zondag","Maandag","Dinsdag","Woensdag","Donderdag","Vrijdag","Zaterdag"];
 
     function fetchAva(){
+        setLoading(true)
         var mails = []
         props.emails.forEach(z => {
             mails.push(z.mail)
@@ -31,7 +32,6 @@ function EmailForm(props){
             meetingTime: props.meetingTijd,
             tijdWeg: props.reistijd
         }
-    setLoading(true)
     fetch("http://localhost:5162/ICS/GetAvailability?bearerToken=" + props.bearer.accessToken, {
         method: "POST",
         body: JSON.stringify(body),
@@ -115,7 +115,6 @@ function EmailForm(props){
 
     function agenda(){
         // fetch()
-
             var checker = false;
             var newList = props.list.map(y => {
                 if(y["Workshop Nummer"] === props.excelSelected["Workshop Nummer"]){
@@ -144,8 +143,7 @@ function EmailForm(props){
                 }
                 else{
                     return y
-                }
-            })
+                }})
             if(checker === false){
                 let emailsOnString = ""
                 props.emails.forEach(x => {emailsOnString = emailsOnString + x.mail + ";"})
@@ -161,20 +159,8 @@ function EmailForm(props){
                 })
             }
             props.setList(newList);
-
-            var newItems = newList.filter(y => {
-                if(y["Definitieve datum"] === undefined){
-                    return true
-                }
-                else{
-                    return false
-                }
-            })
-            
-            setNewerList(newItems)
-            modalRef.current.style.display = "block"
-        
-        
+            props.newerListSetter(newList);
+            modalRef.current.style.display = "block"  
     }
 
     
@@ -366,7 +352,7 @@ function EmailForm(props){
         <div className="modal-content" style={{color: "black"}}>
             <p>Uitnodiging is verstuurd.</p>
             {props.excelList === true ? <>
-                {newerList.length > 0 ? <>
+                {props.newerList.length > 0 ? <>
                     <div className="row m-3 p-2">
                     Volgende item om in te plannen:
                     </div>
@@ -381,8 +367,8 @@ function EmailForm(props){
                     
                 </div>
             </div>
-                    {newerList.map(i => {
-                        return <div key={newerList["Workshop Nummer"]}>
+                    {props.newerList.map(i => {
+                        return <div key={props.newerList["Workshop Nummer"]}>
                             <div className="row m-2 p-1 border border-black border-solid" >
                                 <div className="col">
                                     {i["Workshop Nummer"]}

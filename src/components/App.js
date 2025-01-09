@@ -27,18 +27,36 @@ function App() {
   let [list, setList] = useState([]);
   let [excelList, setExcelList] = useState(false)
   let [excelSelected, setExcelSelected] = useState({})
+  let [newerList, setNewerList] = useState([])
 
+
+  //Fetcht de bearer token vanaf de API
   function fetcher(){
     setIsFetching(true);
     fetch("http://localhost:5162/XOutlookApi/GetBearerToken")
       .then(x => x.json())
       .then((result) => {
         setLogin(result)
+        console.log(result.accessToken)
         setIsLoaded(true)
         setIsFetching(false)
       }, (error) => {
         
       })
+  }
+  
+  //Maakt een lijst van alle items in de opgestuurde excel lijst, die nog geen geplande datum hebben
+  function newerListSetter(newList){
+    var newItems = newList.filter(y => {
+      if(y["Definitieve datum"] === undefined){
+          return true
+      }
+      else{
+          return false
+      }
+  })
+  
+  setNewerList(newItems)
   }
 
   
@@ -108,6 +126,8 @@ function App() {
         list ={list} setList={setList}
         excelSelected={excelSelected} setExcelSelected={setExcelSelected}
         excelList={excelList} setExcelList={setExcelList}
+        newerList={newerList} setNewerList={setNewerList}
+        newerListSetter={newerListSetter}
 
         ></FilForm>
         </> : <>
@@ -127,6 +147,8 @@ function App() {
         list={list} setList={setList}
         excelList = {excelList}
         excelSelected={excelSelected} setExcelSelected={setExcelSelected}
+        newerListSetter={newerListSetter}
+        newerList={newerList} setNewerList={setNewerList}
         ></EmailForm>
         </>}
       
