@@ -206,8 +206,7 @@ function FilForm(props) {
                         
                         
                         </div></>}
-                        
-                        <div className="row" style={{position: "absolute", bottom: 0}}>
+                        <div className="row" >
                             <div className="col">
                             <button className="btn btn-primary" onClick={() => {
                                 if(titelInput.current.value !== ""){
@@ -289,6 +288,8 @@ function FilForm(props) {
                             
                             
                         </div>
+                        
+                        
 
                     </div>
                     <div className="col" >
@@ -296,7 +297,9 @@ function FilForm(props) {
                         <textarea type="textarea" className="form-control" rows={20} defaultValue={props.mailBericht} ref={mailBerichtInput}>
                         </textarea>
                     </div>
+                    
                 </div>
+                
             </div>
         </>
     )
