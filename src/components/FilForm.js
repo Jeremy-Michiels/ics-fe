@@ -206,8 +206,22 @@ function FilForm(props) {
                         
                         
                         </div></>}
-                        <div className="row" >
-                            <div className="col">
+                        
+                        
+                        
+
+                    </div>
+                    <div className="col" >
+                        <h5>Mailbericht</h5>
+                        <textarea type="textarea" className="form-control" rows={20} defaultValue={props.mailBericht} ref={mailBerichtInput}>
+                        </textarea>
+                    </div>
+                    
+                </div>
+                <div className="row" >
+                            <div className="col-sm-5 me-5">
+                                <div className="row">
+                                <div className="col">
                             <button className="btn btn-primary" onClick={() => {
                                 if(titelInput.current.value !== ""){
                                     props.setTitel(titelInput.current.value);
@@ -285,20 +299,15 @@ function FilForm(props) {
                                 </Link>
                             </div>
                             </> : <></>}
+                                </div>
+                            </div>
+                            <div className="col">
+
+                            </div>
+                            
                             
                             
                         </div>
-                        
-                        
-
-                    </div>
-                    <div className="col" >
-                        <h5>Mailbericht</h5>
-                        <textarea type="textarea" className="form-control" rows={20} defaultValue={props.mailBericht} ref={mailBerichtInput}>
-                        </textarea>
-                    </div>
-                    
-                </div>
                 
             </div>
         </>
