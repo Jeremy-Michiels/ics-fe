@@ -133,7 +133,7 @@ function FilForm(props) {
             <div className="container">
                 <div className="row">
                 <h1 className="text-start mb-5">Meeting Gegevens</h1>
-                    <div className="col-sm-4 me-5" style={{position: "relative"}}>
+                    <div className="col-sm-5 me-5" style={{position: "relative"}}>
 
                         <div className="row p-1">
                             <div className="col">
