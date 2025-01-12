@@ -114,7 +114,30 @@ function EmailForm(props){
     }
 
     function agenda(){
-        // fetch()
+        var body = {
+            subject: props.titel,
+            content: props.mailBericht,
+            startTime: new Date(new Date(selDate.datum).toDateString()+ " " + selDate.startTijd),
+            endTime: new Date(new Date(selDate.datum).toDateString()+ " " + selDate.eindTijd),
+            location: props.locatie,
+            attendees: props.emails.map(x => {
+                return {
+                    email: x.mail,
+                    needTravelTime: x.reistijdB,
+                }
+            }),
+            isOnlineMeeting: props.online,
+            travelTime: props.reistijd
+        }
+        fetch(props.api + "/ICS/PostEven?bearerToken=" + props.bearer.accessToken, {
+            method: "POST",
+            body: JSON.stringify(body),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+        .then(res => res.json())
+        .then((result) => {
             var checker = false;
             var newList = props.list.map(y => {
                 if(y["Workshop Nummer"] === props.excelSelected["Workshop Nummer"]){
@@ -161,6 +184,11 @@ function EmailForm(props){
             props.setList(newList);
             props.newerListSetter(newList);
             modalRef.current.style.display = "block"  
+        }, (error) => {
+
+        })
+        
+            
     }
 
     
@@ -413,7 +441,6 @@ function EmailForm(props){
             <div className="col">
                 <button className="btn btn-success" onClick={() => {
                     var wb = XLSX.utils.book_new() ; 
-                    console.log(props.list)
                     var ws = XLSX.utils.json_to_sheet(props.list)
                     XLSX.utils.book_append_sheet(wb, ws, "Sheet1")
                     XLSX.writeFile(wb, "download.xlsx")

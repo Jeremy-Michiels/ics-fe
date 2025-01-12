@@ -32,14 +32,19 @@ function App() {
 
 
   //Fetcht de bearer token vanaf de API
-  function fetcher(){
+  function fetcher(apiT){
     setIsFetching(true);
-    
-    fetch(api + "/XOutlookApi/GetBearerToken")
+    let call = ""
+    if(apiT !== undefined && apiT !== null){
+      call = apiT
+    }
+    else{
+      call = api
+    }
+    fetch(call + "/XOutlookApi/GetBearerToken")
       .then(x => x.json())
       .then((result) => {
         setLogin(result)
-        console.log(result.accessToken)
         setIsLoaded(true)
         setIsFetching(false)
       }, (error) => {
@@ -50,7 +55,7 @@ function App() {
         else{
           setApi("http://localhost:" + item)
         }
-        fetcher()
+        fetcher("http://localhost:" + item)
 
       })
   }
@@ -87,7 +92,7 @@ function App() {
     <div className='container-flex'>
         <div className='row'>
           <div className='col'>
-            <img src={SiteLogo} style={{width: 400}}></img>
+            <img src={SiteLogo} style={{width: 400}} alt='Logo website'></img>
           <div className='loader' >
             
 </div>
@@ -111,7 +116,7 @@ function App() {
     <div className='header ps-5'>
       <div className='row'>
         <div className='col'>
-        <img src={SiteLogo} style={{height: 50}}></img>
+        <img src={SiteLogo} style={{height: 50}} alt='Logo website'></img>
         </div>
         
         <div className='col text-end p-3 pe-5'>

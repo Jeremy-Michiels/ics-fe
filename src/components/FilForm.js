@@ -140,7 +140,6 @@ function FilForm(props) {
                                 <h5 className="text-start">Titel</h5>
                                 <input type="text" className="text-start d-inline-flex p-2 form-control" placeholder={"Vul hier de titel van de workshop in"} defaultValue={props.titel} ref={titelInput} disabled={props.excelSelected["Workshop Naam"] !== undefined}></input>
                             </div>
-                            {console.log(props.excelSelected)}
                         </div>
                         <div className="row p-1">
                             <div className="col">
@@ -173,11 +172,11 @@ function FilForm(props) {
                         <div className="row p-1">
                             <div className="col">
                                 <h5 className="text-start">Start datum</h5>
-                                <input type="date" className="text-start d-inline-flex p-2 form-control" defaultValue={props.stDate} ref={stDateInput} onChange={(y) => console.log(y.target.value)}></input>
+                                <input type="date" className="text-start d-inline-flex p-2 form-control" defaultValue={props.stDate} ref={stDateInput} onChange={(y) => props.setStDate(y)}></input>
                             </div>
                             <div className="col">
                                 <h5 className="text-start">Eind datum</h5>
-                                <input type="date" className="text-start d-inline-flex p-2 form-control" defaultValue={props.enDate} ref={enDateInput}></input>
+                                <input type="date" className="text-start d-inline-flex p-2 form-control" defaultValue={props.enDate} ref={enDateInput} onChange={(y) => props.setEnDate(y)}></input>
                             </div>
                         </div>
                         <div className="row m-2">
