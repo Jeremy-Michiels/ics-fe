@@ -32,7 +32,7 @@ function EmailForm(props){
             meetingTime: props.meetingTijd,
             tijdWeg: props.reistijd
         }
-    fetch("http://localhost:5162/ICS/GetAvailability?bearerToken=" + props.bearer.accessToken, {
+    fetch(props.api + "/ICS/GetAvailability?bearerToken=" + props.bearer.accessToken, {
         method: "POST",
         body: JSON.stringify(body),
         headers: {

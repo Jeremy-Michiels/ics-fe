@@ -28,12 +28,14 @@ function App() {
   let [excelList, setExcelList] = useState(false)
   let [excelSelected, setExcelSelected] = useState({})
   let [newerList, setNewerList] = useState([])
+  let [api, setApi] = useState("http://localhost:5000")
 
 
   //Fetcht de bearer token vanaf de API
   function fetcher(){
     setIsFetching(true);
-    fetch("http://localhost:5162/XOutlookApi/GetBearerToken")
+    
+    fetch(api + "/XOutlookApi/GetBearerToken")
       .then(x => x.json())
       .then((result) => {
         setLogin(result)
@@ -41,7 +43,15 @@ function App() {
         setIsLoaded(true)
         setIsFetching(false)
       }, (error) => {
-        
+        var item = prompt("Op welke localhost poort kunnen we de API bereiken? Zoek hiervoor bij het geopende bestand naar de regels Now listening on: http:localhost:.... ", "")
+        if(item.includes("http://localhost:")){
+          setApi(item)
+        }
+        else{
+          setApi("http://localhost:" + item)
+        }
+        fetcher()
+
       })
   }
   
@@ -65,6 +75,7 @@ function App() {
 
   
   useEffect(() => {
+
     if(!isLoaded && !isFetching){
       fetcher()
     }
@@ -112,6 +123,7 @@ function App() {
     <div className="App">
       {fForm === true ? <>
         <FilForm 
+        api={api}
         check={fForm} setCheck={setFForm} 
         titel={titel} setTitel={setTitel} 
         locatie={locatie} setLocatie={setLocatie} 
@@ -132,6 +144,7 @@ function App() {
         ></FilForm>
         </> : <>
         <EmailForm 
+        api={api}
         check={fForm} setCheck={setFForm} 
         titel={titel} setTitel={setTitel} 
         locatie={locatie} setLocatie={setLocatie} 
