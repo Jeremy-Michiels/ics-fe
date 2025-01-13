@@ -129,17 +129,17 @@ function EmailForm(props){
             isOnlineMeeting: props.online,
             travelTime: props.reistijd
         }
-        fetch(props.api + "/ICS/PostEven?bearerToken=" + props.bearer.accessToken, {
-            method: "POST",
-            body: JSON.stringify(body),
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
-        .then(res => res.json())
-        .then((result) => {
+        // fetch(props.api + "/ICS/PostEven?bearerToken=" + props.bearer.accessToken, {
+        //     method: "POST",
+        //     body: JSON.stringify(body),
+        //     headers: {
+        //         "Content-Type": "application/json"
+        //     }
+        // })
+        // .then(res => res.json())
+        // .then((result) => {
             var checker = false;
-            var newList = props.list.map(y => {
+            var newList = props.WorkshopList.map(y => {
                 if(y["Workshop Nummer"] === props.excelSelected["Workshop Nummer"]){
                     checker = true;
                     let emailsOnString = ""
@@ -171,7 +171,7 @@ function EmailForm(props){
                 let emailsOnString = ""
                 props.emails.forEach(x => {emailsOnString = emailsOnString + x.mail + ";"})
                 newList.push({
-                    "Workshop Nummer": props.list.length + 1,
+                    "Workshop Nummer": props.WorkshopList.length + 1,
                     "Workshop Naam": props.titel,
                     "Functionele groepen": "",
                     "Processen": "",
@@ -181,12 +181,12 @@ function EmailForm(props){
                     "Deelnemers": emailsOnString
                 })
             }
-            props.setList(newList);
+            props.SetWorkshopList(newList);
             props.newerListSetter(newList);
             modalRef.current.style.display = "block"  
-        }, (error) => {
+        // }, (error) => {
 
-        })
+        // })
         
             
     }
@@ -441,7 +441,7 @@ function EmailForm(props){
             <div className="col">
                 <button className="btn btn-success" onClick={() => {
                     var wb = XLSX.utils.book_new() ; 
-                    var ws = XLSX.utils.json_to_sheet(props.list)
+                    var ws = XLSX.utils.json_to_sheet(props.WorkshopList)
                     XLSX.utils.book_append_sheet(wb, ws, "Sheet1")
                     XLSX.writeFile(wb, "download.xlsx")
                 }}>

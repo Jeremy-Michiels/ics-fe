@@ -293,7 +293,7 @@ function FilForm(props) {
                                 <Link to={Template} target="_blank" download>
                                 
                                 <button className="btn btn-success">
-                                    Download de Excel template
+                                    Download de Excel template voor Workshops
                                 </button>
                                 </Link>
                             </div>

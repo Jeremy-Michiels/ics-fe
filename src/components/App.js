@@ -4,6 +4,7 @@ import '../css/bootstrap.min.css'
 import FilForm from './FilForm.js'
 import SiteLogo from '../misc/getsitelogo.png'
 import EmailForm from './EmailForm.js';
+import Canvas from './Canvas.js';
 
 function App() {
   let [fForm, setFForm] = useState(true);
@@ -29,6 +30,7 @@ function App() {
   let [excelSelected, setExcelSelected] = useState({})
   let [newerList, setNewerList] = useState([])
   let [api, setApi] = useState("http://localhost:5000")
+  let [canvas, setCanvas] = useState(false)
 
 
   //Fetcht de bearer token vanaf de API
@@ -74,6 +76,25 @@ function App() {
   setNewerList(newItems)
   }
 
+  function canvasPlan(){
+    if(canvas === false){
+    if(window.confirm("Weet u zeker dat u verder wilt gaan naar het inplannen van canvassen? Alle niet opgeslagen gegevens worden verwijderd.")){
+      setCanvas(true)
+      setFForm(false);
+    }
+  }
+  }
+
+  function meetingPlan(){
+    if(canvas === true){
+    if(window.confirm("Weet u zeker dat u verder wilt gaan met het inplannen van meetings en workshops? Alle niet opgeslagen gegevens worden verwijderd.")){
+      setCanvas(false)
+      setFForm(true)
+    }
+    }
+  }
+
+
   
 
   
@@ -115,8 +136,14 @@ function App() {
     <div className='fading'>
     <div className='header ps-5'>
       <div className='row'>
-        <div className='col'>
+        <div className='col-sm-1'>
         <img src={SiteLogo} style={{height: 50}} alt='Logo website'></img>
+        </div>
+        <div className='col-sm-2 p-3'>
+          <button className='btn btn-primary' onClick={meetingPlan}>Meetings of workshops inplannen</button>
+        </div>
+        <div className='col p-3'>
+          <button className='btn btn-primary' onClick={canvasPlan}>Canvassen inplannen</button>
         </div>
         
         <div className='col text-end p-3 pe-5'>
@@ -126,6 +153,10 @@ function App() {
       
     </div>
     <div className="App">
+      {canvas === true ? <>
+      <Canvas></Canvas>
+
+      </> : <>
       {fForm === true ? <>
         <FilForm 
         api={api}
@@ -162,13 +193,15 @@ function App() {
         bearer={login} setBearer={setLogin}
         meetingTijd = {meetingTijd} setMeetingTijd={setMeetingTijd}
         reistijd = {reistijd}setReisTijd={setReisTijd}
-        list={list} setList={setList}
+        WorkshopList={list} SetWorkshopList={setList}
         excelList = {excelList}
         excelSelected={excelSelected} setExcelSelected={setExcelSelected}
         newerListSetter={newerListSetter}
         newerList={newerList} setNewerList={setNewerList}
         ></EmailForm>
         </>}
+      </>}
+      
       
     </div>
     </div>
