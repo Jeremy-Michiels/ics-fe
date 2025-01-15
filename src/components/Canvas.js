@@ -4,23 +4,20 @@ import CanvasPlan from "./CanvasPlan";
 function Canvas(props){
 
     let canRef = useRef();
-
-    let invRef = useRef();
-    let conDefRef = useRef();
-    let trainingRef = useRef();
-    let defiWSRef = useRef();
-    let defRef = useRef();
-    let revRef = useRef();
-    let valWsRef = useRef();
-    let modalRef = useRef();
+    let mailRef = useRef();
 
     let [canDate, setCanDate] = useState("")
 
     let [mails, setMails] = useState([{
         mail: props.user,
-        ITC: true
+        itcm: true
     }])
     let [sel, setSel] = useState({})
+
+    let [mailInput, setMailInput] = useState(false)
+
+    let [medewerkers, setMedewerkers] = useState(false)
+    let [itc, setItc] = useState(false);
 
     //Bedrijfsnaam
     let [bedrijfNaam, setBedrijfNaam] = useState("")
@@ -171,13 +168,20 @@ function Canvas(props){
                     console.log(dates)
                     var trainingIndex = dates.findIndex(e => e === kickOffDate.toDateString())
                     
-                    i.Inventory = dates[trainingIndex - canvasDays[1].Days - canvasDays[2].Days]
-                    i.ConDef = dates[trainingIndex - canvasDays[2].Days]
-                    i.Training = dates[trainingIndex]
-                    i.DefWS = dates[trainingIndex + canvasDays[3].Days]
-                    i.Def = dates[trainingIndex + canvasDays[3].Days + canvasDays[4].Days]
-                    i.Rev = dates[trainingIndex + canvasDays[3].Days + canvasDays[4].Days + canvasDays[5].Days]
-                    i.ValWs = dates[trainingIndex + canvasDays[3].Days + canvasDays[4].Days + canvasDays[5].Days + canvasDays[6].Days]
+                    i.Inventory.date = dates[trainingIndex - canvasDays[1].Days - canvasDays[2].Days]
+                    i.Inventory.def = true
+                    i.ConDef.date = dates[trainingIndex - canvasDays[2].Days]
+                    i.ConDef.def = true
+                    i.Training.date = dates[trainingIndex]
+                    i.Training.def = false
+                    i.DefWS.date = dates[trainingIndex + canvasDays[3].Days]
+                    i.DefWS.def = false
+                    i.Def.date = dates[trainingIndex + canvasDays[3].Days + canvasDays[4].Days]
+                    i.Def.def = true
+                    i.Rev.date = dates[trainingIndex + canvasDays[3].Days + canvasDays[4].Days + canvasDays[5].Days]
+                    i.Rev.def = true
+                    i.ValWs.date = dates[trainingIndex + canvasDays[3].Days + canvasDays[4].Days + canvasDays[5].Days + canvasDays[6].Days]
+                    i.ValWs.def = false
 
 
 
@@ -244,16 +248,62 @@ function Canvas(props){
             </div>
             {bedrijfBool ? <><div className="row mb-2">
                 <div className="col">
-                    <button className="btn btn-danger">
+                    <button className="btn btn-danger" onClick={() => {
+                        setMailInput(true)
+                        setItc(true)
+                    }}>
                         IT-Councelor medewerker toevoegen
                     </button>
                 </div>
+                <div className="col-sm-3">
+                    <button className="btn btn-success" onClick={() => setMedewerkers(true)}>
+                        Toegevoegde medewerkers
+                    </button>
+                </div>
                 <div className="col">
-                    <button className="btn btn-primary">
+                    <button className="btn btn-primary" onClick={() => {
+                        setMailInput(true)
+                        setItc(false)
+                    }}>
                         {bedrijfNaam} medewerker toevoegen
                     </button>
                 </div>
             </div></> : <></>}
+            {mailInput ? <>
+                <div className="row">
+                <div className="col">
+                    <input type="text" className="form-control" placeholder="E-mail adres" ref={mailRef}>
+                    </input>
+                </div>
+                <div className="col-sm-1">
+                    <button className="btn btn-success" onClick={() => {
+                        
+                        if(mailRef.current.value !== ""){
+
+                        
+                        setMails([
+                            ...mails,
+                            {
+                                itcm: itc,
+                                mail: mailRef.current.value
+                            }
+                        ])
+                        setMailInput(false)
+                    }
+                    else{
+                        alert("Voer een geldig e-mail adres in!")
+                    }
+                    }}>✓</button>
+                </div>
+                <div className="col-sm-1">
+                    <button className="btn btn-danger" onClick={() => {
+                        setMailInput(false)
+                        setItc(false)
+                    }}>X</button>
+                </div>
+            </div>
+            </> : <></>}
+            
             
             <div className="row p-3 bg-white rounded text-black">
                 <div className="row">
@@ -381,10 +431,42 @@ function Canvas(props){
             bearer={props.bearer} setBearer={props.setBearer}
             planner={planner} setPlanner={setPlanner}
             sel={sel}
-            can={curCanObject.can}
+            curCan={curCanObject}
             ></CanvasPlan>
             </div>
         </div>
+        </> : <></>}
+
+        {medewerkers ? <>
+            <div className="modal" style={{display: "block"}}>
+                <div className="modal-content"style={{color: "black"}}>
+                        <div className="row " >
+                        <div className="col text-end">
+                                            <div className="ps-5"> <h2 onClick={() => setMedewerkers(false)} style={{cursor: "pointer"}}>x</h2></div>
+                        </div>
+                </div>
+                {mails.map(x => {
+                    return <div className="row border border-dark" key={x.mail}>
+                        <div className="col">
+                            {x.mail}
+                        </div>
+                        <div className="col">
+                            {x.itcm ? "IT-Councelor" : bedrijfNaam}
+                        </div>
+                        <div className="col">
+                            {x.mail === props.user ? <></> : <>
+                                <button className="btn btn-danger" onClick={() => {
+                                    var n = mails.filter(z => z.mail !== x.mail)
+                                    setMails(n)
+                                }}>x</button>
+                            </>}
+                            
+                        </div>
+                    </div>
+                })}
+            </div>
+        </div>
+
         </> : <></>}
         
         </>

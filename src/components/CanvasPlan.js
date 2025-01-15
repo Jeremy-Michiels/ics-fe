@@ -108,7 +108,7 @@ function CanvasPlan(props){
         <div style={{color: "black"}}>
         <div className="row">
             <div className="col">
-                <h3>{props.can}: {props.sel.Text}</h3>
+                <h3>{props.curCan.can}: {props.sel.Text}</h3>
             </div>
             <div className="col-sm-1 text-end" style={{color:"black"}}>
                                 <div className="ps-5"> <h2 onClick={() => props.setPlanner(false)} style={{cursor: "pointer"}}>x</h2></div>
@@ -156,6 +156,33 @@ function CanvasPlan(props){
                         </div>
                     })}
                 </div>
+                {selDate.datum !== undefined ? <>
+          <div className="row mt-5 mb-3 p-3 border text-center" >
+            
+            
+            <h1>{new Date(selDate.datum).toLocaleDateString("nl")}</h1>
+            <div className="col">
+                Van:
+                <input type="time" defaultValue={selDate.startTijd} onChange={(z) => setSelDate({
+                    ...selDate,
+                    startTijd: z.target.value
+                })}></input>
+            </div>
+            <div className="col">
+                Tot: 
+                <input type="time" defaultValue={selDate.eindTijd} onChange={(z) => setSelDate({
+                    ...selDate,
+                    eindTijd: z.target.value
+                })}></input>
+            </div>
+            <div>
+            <button className="btn btn-success" onClick={() => console.log("stuur")}>
+                Versturen
+            </button>
+            </div>
+            
+            </div>
+            </> : <></>}
                 </> : <></>}
                 </div>
         </> : <div >
