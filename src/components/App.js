@@ -136,13 +136,13 @@ function App() {
     <div className='fading'>
     <div className='header ps-5'>
       <div className='row'>
-        <div className='col-sm-1'>
+        <div className='col p-2 text-center'>
         <img src={SiteLogo} style={{height: 50}} alt='Logo website'></img>
         </div>
-        <div className='col-sm-2 p-3'>
+        <div className='col p-3 text-end'>
           <button className='btn btn-primary' onClick={meetingPlan}>Meetings of workshops inplannen</button>
         </div>
-        <div className='col p-3'>
+        <div className='col p-3 text-start'>
           <button className='btn btn-primary' onClick={canvasPlan}>Canvassen inplannen</button>
         </div>
         
@@ -154,7 +154,11 @@ function App() {
     </div>
     <div className="App">
       {canvas === true ? <>
-      <Canvas></Canvas>
+      <Canvas
+      api={api}
+      user={login.userName}
+      bearer={login} setBearer={setLogin}
+      ></Canvas>
 
       </> : <>
       {fForm === true ? <>
